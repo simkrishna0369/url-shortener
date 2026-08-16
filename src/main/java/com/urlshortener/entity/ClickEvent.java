@@ -15,7 +15,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "click_events", indexes = {
-        @Index(name = "idx_click_events_short_url_id", columnList = "short_url_id")
+        @Index(name = "idx_click_events_short_url_id", columnList = "short_url_id"),
+        @Index(name = "idx_click_events_short_url_clicked_at", columnList = "short_url_id, clicked_at")
 })
 public class ClickEvent {
 

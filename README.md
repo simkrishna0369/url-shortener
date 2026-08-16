@@ -12,6 +12,30 @@ Backend URL shortener built as an AI-assisted SDLC take-home: design, architectu
 
 No frontend. No external services. H2 file DB + in-process cache. Why Caffeine vs Redis / Guava / HashMap: [ADR-005](docs/adr/005-caffeine-vs-redis.md).
 
+## How to review
+
+The assignment asked for **greenfield → brownfield → ambiguous**. Those are **logical phases**, not three feature commits.
+
+`git log` on `main` is collapsed on purpose: the first commit is the working prototype (create, 302, analytics, **and** soft-delete + device/referrer). Later commits are CI, future-work docs, and DELETE/cache contract tests. We did **not** rebase that first commit into a fake chronology after it was on `origin/main`.
+
+| What to review | Read this | Git waypoint |
+|---|---|---|
+| Greenfield (APIs, 302, cache, count+timestamps, rate limit) | [docs/scenarios/greenfield.md](docs/scenarios/greenfield.md), decomposition phases 0–4 | tag `greenfield-baseline` |
+| Brownfield (hard delete → soft delete, cache eviction) | [docs/scenarios/brownfield.md](docs/scenarios/brownfield.md), phases 5.1–5.6 | same code as `greenfield-baseline`; **no separate SHA** — impact table is the evidence |
+| Ambiguous (“analytics” depth) | [docs/scenarios/ambiguous-requirement.md](docs/scenarios/ambiguous-requirement.md), phases 6.1–6.6 | same code as `greenfield-baseline`; interpretation + rejects are the evidence |
+| Accept / **reject** log | [docs/ai-traceability.md](docs/ai-traceability.md) | every row has a rejected alternative |
+| What actually landed after the prototype | `git log --oneline --decorate` | `ci-quality-gate`, then docs, then `delete-contracts` |
+
+```bash
+git fetch --tags
+git log --oneline --decorate
+git show greenfield-baseline --stat   # first landed prototype
+git show ci-quality-gate --stat
+git show delete-contracts --stat
+```
+
+Suggested read order: this README → `docs/requirements.md` → `docs/decomposition.md` → the three scenario files → `ARCHITECTURE.md` → `docs/ai-traceability.md` → `docs/final-summary.md`. Then `mvn test`.
+
 ## Prerequisites
 
 - Java 17+
@@ -81,6 +105,7 @@ Tunables live in `src/main/resources/application.yml` and can be overridden with
 | `APP_CACHE_MAX_SIZE` | Max cached redirect entries |
 | `APP_RATE_LIMIT_CAPACITY` | Token-bucket size for `POST /api/v1/urls` |
 | `APP_URL_MAX_LENGTH` | Max accepted long-URL length |
+| `APP_ANALYTICS_CLICKS_LIMIT` | Max click rows returned on analytics (`clickCount` is still the full total) |
 
 ## Continuing on another machine / another LLM
 
@@ -105,6 +130,6 @@ Root stays assignment-facing: `README.md`, `ARCHITECTURE.md`, `PROMPTS.md`.
 | [docs/future-work.md](docs/future-work.md) | Ranked backlog — do not invent extra scope |
 | [docs/ai-traceability.md](docs/ai-traceability.md) | Per-task accept/reject and high-impact sign-offs |
 | [docs/adr/](docs/adr/) | ADRs (302, Base62, async clicks, H2 vs SQLite, Caffeine vs Redis) |
-| [docs/scenarios/](docs/scenarios/) | Greenfield / brownfield / ambiguous write-ups |
+| [docs/scenarios/](docs/scenarios/) | Greenfield / brownfield (delete + analytics read path) / ambiguous write-ups |
 | [docs/testing-and-validation.md](docs/testing-and-validation.md) | Test approach |
 | [docs/final-summary.md](docs/final-summary.md) | Risks, trade-offs, limitations |

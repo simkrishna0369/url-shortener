@@ -11,6 +11,7 @@ public class AppProperties {
     private final Cache cache = new Cache();
     private final RateLimit rateLimit = new RateLimit();
     private final Async async = new Async();
+    private final Analytics analytics = new Analytics();
 
     public String getBaseUrl() {
         return baseUrl;
@@ -42,6 +43,10 @@ public class AppProperties {
 
     public Async getAsync() {
         return async;
+    }
+
+    public Analytics getAnalytics() {
+        return analytics;
     }
 
     public static class Url {
@@ -143,6 +148,18 @@ public class AppProperties {
 
         public void setClickQueueCapacity(int clickQueueCapacity) {
             this.clickQueueCapacity = clickQueueCapacity;
+        }
+    }
+
+    public static class Analytics {
+        private int clicksLimit = 100;
+
+        public int getClicksLimit() {
+            return clicksLimit;
+        }
+
+        public void setClicksLimit(int clicksLimit) {
+            this.clicksLimit = clicksLimit;
         }
     }
 }

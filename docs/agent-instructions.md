@@ -38,7 +38,7 @@ Tool-specific loaders (not in the repo root):
 | Future work (do not invent extra scope) | `docs/future-work.md` |
 | Standing implementation rules (verbose) | `docs/cursor-implementation-prompt.md` |
 | Why 302 / Base62 / async clicks / H2 / Caffeine | `docs/adr/` |
-| Greenfield / brownfield / ambiguous | `docs/scenarios/` |
+| Greenfield / brownfield / ambiguous | `docs/scenarios/` (logical phases; see README “How to review”) |
 
 ## Out of scope unless the human explicitly asks
 

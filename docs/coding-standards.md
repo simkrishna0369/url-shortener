@@ -25,7 +25,7 @@ Source of truth for style and engineering rules. The longer operating prompt is 
 
 ## Config and security
 
-- Cache TTL, rate limits, max URL length, base URL: `application.yml`, overridable by env (`APP_*`).
+- Cache TTL, rate limits, max URL length, analytics click-list cap, base URL: `application.yml`, overridable by env (`APP_*`).
 - Allow `http`/`https` only. Reject `javascript:`, `data:`, `file:`.
 - Rate-limit `POST /api/v1/urls` per IP.
 - Do not commit secrets. H2 local credentials stay in config as empty/`sa` for the prototype only.

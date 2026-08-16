@@ -114,7 +114,7 @@ not this prompt's summary.
   traceable operations).
 
 ### 3.5 Config management
-- All tunables (cache TTL, rate limit thresholds, base URL for short links) in
+- All tunables (cache TTL, rate limit thresholds, analytics click-list cap, base URL for short links) in
   `application.yml`, overridable via environment variables. No hardcoded values.
 
 ### 3.6 Git/change hygiene

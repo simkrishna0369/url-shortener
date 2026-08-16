@@ -110,6 +110,20 @@ This file is the assignment-required log of how AI was used. Detailed per-task a
 
 ---
 
+## Session 6 — Analytics read-path brownfield
+
+**Goal:** Fix unbounded analytics reads on the existing API.
+
+**Prompt (user):** Implement SQL aggregates + cap `clicks` as a data-path brownfield change.
+
+**What I kept:** `clickCount` and `breakdown` over all events; `clicks` as a recent window; tunables in `application.yml`.
+
+**What I rejected:** Dropping the click list; pagination query params; Redis aggregators; aggregating in the service after `findAll`.
+
+**Outcome:** `docs/scenarios/brownfield-analytics.md`, repository `GROUP BY` queries, `app.analytics.clicks-limit`.
+
+---
+
 ## How to read this with the code
 
 1. Requirements and ambiguities → `docs/requirements.md`

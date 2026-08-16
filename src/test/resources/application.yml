@@ -29,3 +29,5 @@ app:
     click-core-pool-size: 1
     click-max-pool-size: 1
     click-queue-capacity: 50
+  analytics:
+    clicks-limit: 100

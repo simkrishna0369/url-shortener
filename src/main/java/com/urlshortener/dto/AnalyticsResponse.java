@@ -8,6 +8,7 @@ public record AnalyticsResponse(
         String shortCode,
         long clickCount,
         List<ClickDto> clicks,
+        boolean clicksTruncated,
         Breakdown breakdown
 ) {
 

@@ -12,15 +12,17 @@ import com.urlshortener.exception.ShortUrlNotFoundException;
 import com.urlshortener.repository.ClickEventRepository;
 import com.urlshortener.repository.ShortUrlRepository;
 import com.urlshortener.util.Base62Encoder;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,32 +109,38 @@ public class ShortUrlService {
     public AnalyticsResponse getAnalytics(String shortCode) {
         ShortUrl entity = shortUrlRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ShortUrlNotFoundException(shortCode));
-        List<ClickEvent> events = clickEventRepository.findByShortUrlIdOrderByClickedAtAsc(entity.getId());
+        Long shortUrlId = entity.getId();
+        long clickCount = clickEventRepository.countByShortUrlId(shortUrlId);
+        int clicksLimit = Math.max(1, properties.getAnalytics().getClicksLimit());
 
-        List<AnalyticsResponse.ClickDto> clicks = events.stream()
+        List<ClickEvent> newestFirst = clickEventRepository.findByShortUrlIdOrderByClickedAtDesc(
+                shortUrlId, PageRequest.of(0, clicksLimit));
+        List<ClickEvent> window = new ArrayList<>(newestFirst);
+        Collections.reverse(window);
+
+        List<AnalyticsResponse.ClickDto> clicks = window.stream()
                 .map(event -> new AnalyticsResponse.ClickDto(
                         event.getClickedAt(),
                         event.getDeviceType(),
                         event.getReferrer()))
                 .toList();
 
-        Map<String, Long> devices = events.stream()
-                .collect(Collectors.groupingBy(
-                        event -> event.getDeviceType() == null ? "unknown" : event.getDeviceType(),
-                        LinkedHashMap::new,
-                        Collectors.counting()));
-        Map<String, Long> referrers = events.stream()
-                .collect(Collectors.groupingBy(
-                        event -> event.getReferrer() == null || event.getReferrer().isBlank()
-                                ? "direct"
-                                : event.getReferrer(),
-                        LinkedHashMap::new,
-                        Collectors.counting()));
+        Map<String, Long> devices = toCountMap(clickEventRepository.countGroupedByDevice(shortUrlId));
+        Map<String, Long> referrers = toCountMap(clickEventRepository.countGroupedByReferrer(shortUrlId));
 
         return new AnalyticsResponse(
                 entity.getShortCode(),
-                events.size(),
+                clickCount,
                 clicks,
+                clickCount > clicks.size(),
                 new AnalyticsResponse.Breakdown(devices, referrers));
+    }
+
+    private static Map<String, Long> toCountMap(List<ClickEventRepository.KeyCount> rows) {
+        Map<String, Long> counts = new LinkedHashMap<>();
+        for (ClickEventRepository.KeyCount row : rows) {
+            counts.put(row.getGroupingKey(), row.getTotal());
+        }
+        return counts;
     }
 }

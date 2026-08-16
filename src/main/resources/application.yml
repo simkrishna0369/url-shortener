@@ -39,6 +39,8 @@ app:
     click-core-pool-size: 2
     click-max-pool-size: 8
     click-queue-capacity: 1000
+  analytics:
+    clicks-limit: ${APP_ANALYTICS_CLICKS_LIMIT:100}
 
 logging:
   pattern:

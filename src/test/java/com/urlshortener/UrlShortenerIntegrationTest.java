@@ -49,6 +49,7 @@ class UrlShortenerIntegrationTest {
                 mockMvc.perform(get("/api/v1/urls/" + shortCode + "/analytics"))
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.clickCount").value(1))
+                        .andExpect(jsonPath("$.clicksTruncated").value(false))
                         .andExpect(jsonPath("$.clicks[0].deviceType").value("mobile"))
                         .andExpect(jsonPath("$.clicks[0].referrer").value("https://news.example"))
                         .andExpect(jsonPath("$.breakdown.devices.mobile").value(1)));

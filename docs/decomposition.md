@@ -118,3 +118,11 @@ milestone before starting brownfield work.**
   the hot path; async (e.g., `@Async` or a lightweight queue) avoids that but adds
   complexity and eventual-consistency risk on the count. Worth an ADR once you reach
   that task if you want the reasoning documented.
+
+---
+
+## Phase 11 — Brownfield: analytics read path (post-v1)
+
+| # | Task | Depends on | Notes |
+|---|---|---|---|
+| 11.1 | Stop loading all click rows in `getAnalytics`; `COUNT` + `GROUP BY` in the repository; cap `clicks` via `app.analytics.clicks-limit` | Phase 6 | See `docs/scenarios/brownfield-analytics.md` |

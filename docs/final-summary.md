@@ -23,6 +23,7 @@ Stack choice (Java 17, Spring Boot, H2 file, Caffeine, Maven) favors a **single-
 - **Guessable codes** — sequential IDs are enumerable. Fine for an anonymous demo; wrong if short links are a secret.
 - **In-process rate limit and cache** — per JVM. Two instances will not share buckets or eviction.
 - **Eventual click counts** — a read immediately after 302 may still show 0; clients should tolerate a short delay.
+- **Capped click details** — `clickCount` and `breakdown` cover all events; `clicks` is the latest N (default 100) so one popular code cannot serialize its full history.
 - **Dropped clicks** when the async queue is full — we chose redirect availability over perfect analytics.
 - **Open redirects to user-supplied http(s) URLs** — that *is* the product. We only block dangerous schemes.
 

@@ -18,6 +18,7 @@
 | Cached redirect 404 after DELETE (eviction, not stale hit) | `UrlShortenerIntegrationTest` |
 | DELETE unknown code → 404; DELETE already-inactive → 204 | `UrlShortenerIntegrationTest` |
 | Create rate limit → 429 | `RateLimitIntegrationTest` |
+| Analytics cap: `clickCount` stays total, `clicks` limited | `AnalyticsCapIntegrationTest` |
 
 ## What is not tested (and why)
 
@@ -26,6 +27,7 @@
 - **GeoIP accuracy** — geo is out of v1.
 - **H2 file durability across JVM crash** — file mode is configured for local demo, not chaos-tested.
 - **Token-bucket refill timing** — we assert “exceed capacity → 429”, not the exact refill clock.
+- **Analytics over millions of clicks** — aggregates are in SQL; we do not load-test H2 grouping.
 
 ## How to run
 

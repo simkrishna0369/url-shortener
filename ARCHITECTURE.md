@@ -57,7 +57,7 @@ Layering is strict: controllers do not contain business rules; services do not c
 | `POST` | `/api/v1/urls` | 201 | Create short URL. Body: `{"url":"https://..."}` |
 | `GET` | `/{shortCode}` | 302 | Redirect. 404 if missing or inactive |
 | `GET` | `/api/v1/urls/{shortCode}` | 200 | Metadata (includes `active`) |
-| `GET` | `/api/v1/urls/{shortCode}/analytics` | 200 | Count, timestamps, device/referrer breakdown |
+| `GET` | `/api/v1/urls/{shortCode}/analytics` | 200 | Count and breakdown over **all** clicks; `clicks` is the most recent N (`app.analytics.clicks-limit`, default 100). `clicksTruncated` is true when history is longer than that window. |
 | `DELETE` | `/api/v1/urls/{shortCode}` | 204 | Soft delete (`active=false`) + cache eviction. **204** if already inactive (idempotent). **404** if the code was never created. |
 
 Error body shape:
@@ -94,6 +94,7 @@ We did **not** pick Redis (or Hazelcast) for v1: those are the right tools when 
 | Abuse of create | Per-IP token bucket on `POST /api/v1/urls` |
 | Unsafe destinations | Allow-list `http`/`https`; reject `javascript:`, `data:`, `file:` |
 | Deletion vs analytics | Soft delete so click rows remain ([brownfield scenario](docs/scenarios/brownfield.md)) |
+| Analytics read vs heap | SQL `COUNT` / `GROUP BY` for totals; cap `clicks[]` ([analytics brownfield](docs/scenarios/brownfield-analytics.md)) |
 
 ## 8. What this prototype is not
 
