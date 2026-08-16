@@ -2,6 +2,8 @@
 
 One entry per implementation chunk. High-impact items are marked **⚠ HIGH-IMPACT**.
 
+GitHub Actions **cannot** import Cursor or Claude chats. The log in this file **is** the session record a reviewer can `git show`. CI enforces that: if `src/` or `pom.xml` changes, this file must change in the same push/PR. Docs, README, and workflow-only diffs skip the check. Locally: `./scripts/check-ai-traceability.sh`.
+
 | ID | Task | Outcome | Notes |
 |---|---|---|---|
 | T0.1–0.5 | Scaffold, H2 file config, Caffeine bean, packages, exception handler | **Accepted** | Maven / Java 17 / Spring Boot 3.4.2 |
@@ -12,6 +14,7 @@ One entry per implementation chunk. High-impact items are marked **⚠ HIGH-IMPA
 | T5.1–5.6 | Soft delete, query filters, analytics retention, cache eviction | **Accepted ⚠** | Brownfield: hard delete would break FR6 |
 | T6.1–6.6 | Analytics depth interpretation + UA/referrer/device | **Accepted ⚠** | Schema + API shape. Geo omitted on purpose |
 | T7 | README, ARCHITECTURE, PROMPTS, ADRs, scenarios, summary | **Accepted** | Assignment deliverables |
+| T8 | CI quality gate + AI log check | **Accepted** | `mvn test` on push/PR. Traceability job requires this file when `src/` or `pom.xml` changes. Rejected: uploading IDE transcripts (not available to GitHub). |
 
 ## ⚠ High-impact sign-offs
 
@@ -21,3 +24,16 @@ One entry per implementation chunk. High-impact items are marked **⚠ HIGH-IMPA
 4. **Delete semantics** — Soft delete so analytics FK rows remain.
 5. **Public API** — `/api/v1` JSON DTOs; analytics includes `breakdown`.
 6. **Click recording** — Async; dropping clicks under overload is preferred to slowing redirects (ADR-003).
+
+## Later sessions (copy this block)
+
+Use one block per non-trivial code change. CI only checks that this file changed; the content is for humans.
+
+### T8 — 2026-08-16 — Quality gate
+
+- **Intent:** Machine-checked tests plus a reminder to log AI-assisted code changes.
+- **Prompt:** Add GitHub Actions as a quality gate, and AI session logs when the change is non-trivial. Keep it practical; do not invent features GitHub cannot do.
+- **Files:** `.github/workflows/quality-gate.yml`, `scripts/check-ai-traceability.sh`, this file, README / testing docs.
+- **Accepted:** JDK 17 `mvn -B test`; fail if `src/` or `pom.xml` changed without this log.
+- **Rejected:** Checkstyle (no config in the repo yet). Scraping Cursor history. Requiring a log for docs-only edits.
+- **Validation:** `mvn test` locally; CI jobs `mvn test` and `AI session log` on GitHub.

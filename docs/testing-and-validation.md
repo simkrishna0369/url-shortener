@@ -30,3 +30,7 @@
 ```bash
 mvn test
 ```
+
+GitHub Actions workflow `.github/workflows/quality-gate.yml` runs `mvn -B test` on `push` to `main` and on pull requests. A second job requires `docs/ai-traceability.md` to change when `src/` or `pom.xml` changes (not when you only edit docs).
+
+This is not a load test, linter farm, or security scanner. Those are still out of scope for this prototype.

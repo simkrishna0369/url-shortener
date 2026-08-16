@@ -96,6 +96,20 @@ This file is the assignment-required log of how AI was used. Detailed per-task a
 
 ---
 
+## Session 5 — GitHub Actions quality gate
+
+**Goal:** A real CI gate, plus a practical AI-log check for non-trivial code changes.
+
+**Prompt (user):** Add GitHub Actions for a quality gate and AI session logs when a change is non-trivial. Do not invent something GitHub cannot do.
+
+**What I kept:** `mvn -B test` on Java 17; require `docs/ai-traceability.md` when `src/` or `pom.xml` changes.
+
+**What I rejected:** Checkstyle with no existing config. Uploading Cursor transcripts (Actions never sees the IDE). Failing docs-only PRs for a missing log.
+
+**Outcome:** `.github/workflows/quality-gate.yml`, `scripts/check-ai-traceability.sh`
+
+---
+
 ## How to read this with the code
 
 1. Requirements and ambiguities → `docs/requirements.md`

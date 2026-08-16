@@ -24,8 +24,8 @@ Tool-specific loaders (not in the repo root):
 2. Use `docs/decomposition.md` for remaining / historical task order. Do not dump a whole new feature in one shot.
 3. Follow `docs/coding-standards.md`.
 4. If you change architecture, write or update an ADR under `docs/adr/`.
-5. Log the prompt + decision in `PROMPTS.md` or `docs/ai-traceability.md`.
-6. Run `mvn test` before considering work done.
+5. Log the prompt + decision in `docs/ai-traceability.md` (and `PROMPTS.md` for larger sessions). CI requires the traceability file to change when `src/` or `pom.xml` changes.
+6. Run `mvn test` before considering work done. GitHub Actions repeats that on push/PR.
 
 ## Doc map
 

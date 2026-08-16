@@ -32,6 +32,10 @@ JDBC URL: `jdbc:h2:file:./data/urlshortener`
 mvn test
 ```
 
+Pushes and pull requests run the same suite in GitHub Actions (Java 17). That is the quality gate.
+
+If you change `src/` or `pom.xml`, add a short row to [docs/ai-traceability.md](docs/ai-traceability.md) in the same commit/PR. CI fails without it. Docs-only changes do not need a log. GitHub cannot see Cursor chats; that file is the session record.
+
 ## API examples
 
 Create:

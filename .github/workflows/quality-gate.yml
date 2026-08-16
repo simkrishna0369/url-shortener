@@ -1,0 +1,45 @@
+name: Quality gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: mvn test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+      - name: Run unit and integration tests
+        run: mvn -B test
+
+  ai-session-log:
+    name: AI session log
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require traceability log when src or pom.xml changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_HEAD: ${{ github.sha }}
+        run: |
+          chmod +x scripts/check-ai-traceability.sh
+          if [ "${EVENT_NAME}" = "pull_request" ]; then
+            ./scripts/check-ai-traceability.sh "${PR_BASE}" "${PR_HEAD}"
+          else
+            ./scripts/check-ai-traceability.sh "${PUSH_BEFORE}" "${PUSH_HEAD}"
+          fi
