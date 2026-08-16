@@ -15,6 +15,7 @@ GitHub Actions **cannot** import Cursor or Claude chats. The log in this file **
 | T6.1–6.6 | Analytics depth interpretation + UA/referrer/device | **Accepted ⚠** | Schema + API shape. Geo omitted on purpose |
 | T7 | README, ARCHITECTURE, PROMPTS, ADRs, scenarios, summary | **Accepted** | Assignment deliverables |
 | T8 | CI quality gate + AI log check | **Accepted** | `mvn test` on push/PR. Traceability job requires this file when `src/` or `pom.xml` changes. Rejected: uploading IDE transcripts (not available to GitHub). |
+| T9 | Soft-delete contract tests (cache eviction, unknown DELETE, idempotent DELETE) | **Accepted** | Locked already-inactive DELETE as 204, not 404. |
 
 ## ⚠ High-impact sign-offs
 
@@ -37,3 +38,12 @@ Use one block per non-trivial code change. CI only checks that this file changed
 - **Accepted:** JDK 17 `mvn -B test`; fail if `src/` or `pom.xml` changed without this log.
 - **Rejected:** Checkstyle (no config in the repo yet). Scraping Cursor history. Requiring a log for docs-only edits.
 - **Validation:** `mvn test` locally; CI jobs `mvn test` and `AI session log` on GitHub.
+
+### T9 — 2026-08-16 — Soft-delete / cache contract tests
+
+- **Intent:** Cover cache eviction after DELETE, unknown-code DELETE, and already-inactive DELETE (previously unspecified).
+- **Prompt:** Implement the tests the plan promised but did not ship: cached code 404 after DELETE; deactivate unknown → 404; idempotent DELETE on already-inactive.
+- **Files:** `UrlShortenerIntegrationTest`, this log, `ARCHITECTURE.md`, `docs/testing-and-validation.md`.
+- **Accepted:** Repeat DELETE on an inactive code returns **204** (idempotent deactivate). Missing code still **404**. Redirect after deactivate is **404** even when Caffeine had a hit.
+- **Rejected:** 404 on second DELETE (would make retries look like “not found” for a code the client just deactivated).
+- **Validation:** `mvn test`.

@@ -58,7 +58,7 @@ Layering is strict: controllers do not contain business rules; services do not c
 | `GET` | `/{shortCode}` | 302 | Redirect. 404 if missing or inactive |
 | `GET` | `/api/v1/urls/{shortCode}` | 200 | Metadata (includes `active`) |
 | `GET` | `/api/v1/urls/{shortCode}/analytics` | 200 | Count, timestamps, device/referrer breakdown |
-| `DELETE` | `/api/v1/urls/{shortCode}` | 204 | Soft delete (`active=false`) + cache eviction |
+| `DELETE` | `/api/v1/urls/{shortCode}` | 204 | Soft delete (`active=false`) + cache eviction. **204** if already inactive (idempotent). **404** if the code was never created. |
 
 Error body shape:
 

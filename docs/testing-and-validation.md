@@ -15,6 +15,8 @@
 | Device parsing including missing UA | `UserAgentParserTest` |
 | Create + redirect + analytics + multi-click | `UrlShortenerIntegrationTest` |
 | Soft-delete keeps analytics, blocks redirect | `UrlShortenerIntegrationTest` |
+| Cached redirect 404 after DELETE (eviction, not stale hit) | `UrlShortenerIntegrationTest` |
+| DELETE unknown code → 404; DELETE already-inactive → 204 | `UrlShortenerIntegrationTest` |
 | Create rate limit → 429 | `RateLimitIntegrationTest` |
 
 ## What is not tested (and why)

@@ -71,6 +71,48 @@ class UrlShortenerIntegrationTest {
     }
 
     @Test
+    void should_return404OnRedirect_when_cachedCodeIsDeactivated() throws Exception {
+        String shortCode = createUrl("https://example.com/cached-then-deleted");
+
+        mockMvc.perform(get("/" + shortCode))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "https://example.com/cached-then-deleted"));
+        mockMvc.perform(get("/" + shortCode))
+                .andExpect(status().isFound())
+                .andExpect(header().string("Location", "https://example.com/cached-then-deleted"));
+
+        mockMvc.perform(delete("/api/v1/urls/" + shortCode))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/" + shortCode))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
+    }
+
+    @Test
+    void should_return404_when_deactivatingUnknownShortCode() throws Exception {
+        mockMvc.perform(delete("/api/v1/urls/zzzzzzz"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("NOT_FOUND"));
+    }
+
+    @Test
+    void should_return204_when_deactivatingAlreadyInactiveLink() throws Exception {
+        String shortCode = createUrl("https://example.com/delete-twice");
+
+        mockMvc.perform(delete("/api/v1/urls/" + shortCode))
+                .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/v1/urls/" + shortCode))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/api/v1/urls/" + shortCode))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.active").value(false));
+        mockMvc.perform(get("/" + shortCode))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void should_keepAnalytics_when_linkIsSoftDeleted() throws Exception {
         String shortCode = createUrl("https://example.com/to-delete");
 
