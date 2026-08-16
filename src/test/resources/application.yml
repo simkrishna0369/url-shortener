@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:urlshortener-test;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: false
+  h2:
+    console:
+      enabled: false
+
+app:
+  base-url: http://localhost:8080
+  short-code-length: 7
+  url:
+    max-length: 2048
+    allowed-schemes: http,https
+  cache:
+    ttl-seconds: 60
+    max-size: 100
+  rate-limit:
+    capacity: 1000
+    refill-tokens: 1000
+    refill-period-seconds: 60
+  async:
+    click-core-pool-size: 1
+    click-max-pool-size: 1
+    click-queue-capacity: 50

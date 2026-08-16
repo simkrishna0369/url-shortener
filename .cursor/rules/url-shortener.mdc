@@ -1,0 +1,17 @@
+---
+description: Locked architecture and coding rules for the URL shortener
+alwaysApply: true
+---
+
+# URL shortener — always-on agent rules
+
+Read `docs/agent-instructions.md` before changing code. Do not put `AGENTS.md` or `CLAUDE.md` in the repository root.
+
+- Stack: Java 17, Spring Boot 3, Maven, H2 file DB, Caffeine, `/api/v1`.
+- Layers: Controller → Service → Repository. No business logic in controllers. No JPQL in services. DTOs on the API, never JPA entities.
+- Redirect: **302 only**. Do not add 301 unless the human asks, and then it must be optional with 302 as default (ADR-001).
+- Short codes: Base62(id) padded to 7 chars. Not MD5/SHA of the URL (ADR-002).
+- Tunables live in `application.yml` / env vars. No `System.out.println`. Custom exceptions via `@ControllerAdvice`.
+- Tests: `should_<behavior>_when_<condition>`. Run `mvn test`.
+- Do not silently add auth, Redis, hashing, or a frontend. See `docs/future-work.md`.
+- One scoped change per pass. Update ADRs / `PROMPTS.md` when a decision changes.

@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/urlshortener;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  cache:
+    type: caffeine
+
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+  short-code-length: 7
+  url:
+    max-length: ${APP_URL_MAX_LENGTH:2048}
+    allowed-schemes: http,https
+  cache:
+    ttl-seconds: ${APP_CACHE_TTL_SECONDS:300}
+    max-size: ${APP_CACHE_MAX_SIZE:10000}
+  rate-limit:
+    capacity: ${APP_RATE_LIMIT_CAPACITY:30}
+    refill-tokens: ${APP_RATE_LIMIT_REFILL_TOKENS:30}
+    refill-period-seconds: ${APP_RATE_LIMIT_REFILL_PERIOD_SECONDS:60}
+  async:
+    click-core-pool-size: 2
+    click-max-pool-size: 8
+    click-queue-capacity: 1000
+
+logging:
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level shortCode=%X{shortCode} - %msg%n"
+  level:
+    com.urlshortener: INFO
